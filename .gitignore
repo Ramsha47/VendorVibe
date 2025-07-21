@@ -1,0 +1,4 @@
+# Ignore node_modules at the project root
+/node_modules
+
+# You can add more patterns below as needed
