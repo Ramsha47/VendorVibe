@@ -119,6 +119,7 @@ router.post("/login-user", catchAsyncError(async (req, res, next) => {
     if (!isPasswordMatched) {
       return next(new ErrorHandler("Invalid email or password", 400));
     }
+    console.log(`Login successful, authenticated user: ${user.email} (${user._id})`);
     sendToken(user, 200, res);
   } catch (error) {
     return next(new ErrorHandler(error.message, 500));
@@ -147,5 +148,21 @@ router.get(
     }
   })
 );
+
+// logout 
+router.get("/logout",isAuthenticatedUser, catchAsyncError(async (req, res, next) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+}));
 
 module.exports = router;

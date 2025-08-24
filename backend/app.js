@@ -27,6 +27,7 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 
 // Routes
 const user = require("./controller/user");
+const shop = require("./controller/shop");
 
 app.get("/test", (req, res) => {
   console.log("Test route hit");
@@ -34,6 +35,7 @@ app.get("/test", (req, res) => {
 });
 
 app.use("/api/v2/user", user);
+app.use("/api/v2/shop", shop);
 
 // Error Handling
 app.use(ErrorHandler);

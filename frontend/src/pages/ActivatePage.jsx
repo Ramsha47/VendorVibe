@@ -26,7 +26,7 @@ const ActivationPage = () => {
       };
       sendRequest();
     }
-  }, [activation_token]);
+  }, []);
 
   if (success) {
     console.log("Success branch");

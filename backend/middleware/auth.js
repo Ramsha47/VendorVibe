@@ -13,3 +13,14 @@ exports.isAuthenticatedUser = catchAsyncError(async (req, res, next) => {
     next();
 });
 
+exports.isSeller = catchAsyncError(async (req, res, next) => {
+    const { seller_token } = req.cookies;
+    if (!seller_token) {
+        return next(new ErrorHandler("Login first to access this resource", 401));
+    }
+    const decoded = jwt.verify(seller_token, process.env.JWT_SECRET);
+    req.seller = await Shop.findById(decoded.id);
+    next();
+});
+
+

@@ -16,22 +16,7 @@ import styles from "../../../styles/styles";
 //   removeFromWishlist,
 // } from "../../../redux/actions/wishlist";
 
-import { productData } from '../../../static/data';
-
-const getValidImageUrl = (arr) => {
-  if (!Array.isArray(arr)) return "https://via.placeholder.com/300x300?text=No+Image";
-  const found = arr.find(img => img.url && img.url.startsWith("http") && !img.url.includes("google.com/url"));
-  return found ? found.url : "https://via.placeholder.com/300x300?text=No+Image";
-};
-
-const ProductDetailsCard = ({ setOpen, data: propData }) => {
-  // If no data prop, use first product from static data as fallback
-  let data = propData;
-  if (!data) {
-    data = productData[0];
-  }
-  // Defensive: if you want to select by id, you could use:
-  // data = propData || productData.find(p => p.id === someId) || productData[0];
+const ProductDetailsCard = ({ setOpen, data }) => {
   // const { cart } = useSelector((state) => state.cart);
   // const { wishlist } = useSelector((state) => state.wishlist);
   // const dispatch = useDispatch();
@@ -97,12 +82,12 @@ const ProductDetailsCard = ({ setOpen, data: propData }) => {
 
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
-                <img src={getValidImageUrl(data.image_Url)} alt={data.name || ''} />
+                <img src={`${data.images && data.images[0]?.url}`} alt="" />
                 <div className="flex">
                   <Link to={`/shop/preview/${data.shop._id}`} className="flex">
                     <img
-                      src={getValidImageUrl(data.image_Url)}
-                      alt={data.name || ''}
+                      src={`${data.images && data.images[0]?.url}`}
+                      alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
                     <div>
