@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "../../styles/styles";
-import { categoriesData, productData } from "../../static/data";
+import { categoriesData } from "../../static/data";
 import {
   AiOutlineHeart,
   AiOutlineSearch,
@@ -13,16 +13,16 @@ import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
-import Cart from "../cart/Cart";
-import Wishlist from "../Wishlist/Wishlist";
+// import Cart from "../cart/Cart";
+// import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
-  // const { isSeller } = useSelector((state) => state.seller);
+  const { isSeller } = useSelector((state) => state.seller);
   // const { wishlist } = useSelector((state) => state.wishlist);
   // const { cart } = useSelector((state) => state.cart);
-  // const { allProducts } = useSelector((state) => state.products);
+  const { allProducts = [] } = useSelector((state) => state.product);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
   const [active, setActive] = useState(false);
@@ -35,10 +35,11 @@ const Header = ({ activeHeading }) => {
     const term = e.target.value;
     setSearchTerm(term);
 
-    // Use static productData for search suggestions (demo stability)
-    const filteredProducts = productData.filter((product) =>
-      product.name.toLowerCase().includes(term.toLowerCase())
-    );
+    const filteredProducts =
+      allProducts &&
+      allProducts.filter((product) =>
+        product.name.toLowerCase().includes(term.toLowerCase())
+      );
     setSearchData(filteredProducts);
   };
 
@@ -96,14 +97,14 @@ const Header = ({ activeHeading }) => {
             ) : null}
           </div>
 
-          {/* <div className={`${styles.button}`}>
+          <div className={`${styles.button}`}>
             <Link to={`${isSeller ? "/dashboard" : "/shop-create"}`}>
               <h1 className="text-[#fff] flex items-center">
                 {isSeller ? "Go Dashboard" : "Become Seller"}{" "}
                 <IoIosArrowForward className="ml-1" />
               </h1>
             </Link>
-          </div> */}
+          </div>
         </div>
       </div>
       <div
@@ -188,12 +189,12 @@ const Header = ({ activeHeading }) => {
             </div>
 
             {/* cart popup */}
-            {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+            {/* {openCart ? <Cart setOpenCart={setOpenCart} /> : null} */}
 
             {/* wishlist popup */}
-            {openWishlist ? (
+            {/* {openWishlist ? (
               <Wishlist setOpenWishlist={setOpenWishlist} />
-            ) : null}
+            ) : null} */}
           </div>
         </div>
       </div>
@@ -234,10 +235,10 @@ const Header = ({ activeHeading }) => {
             </div>
           </div>
           {/* cart popup */}
-          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
+          {/* {openCart ? <Cart setOpenCart={setOpenCart} /> : null} */}
 
           {/* wishlist popup */}
-          {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
+          {/* {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null} */}
         </div>
 
         {/* header sidebar */}

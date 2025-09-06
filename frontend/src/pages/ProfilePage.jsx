@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/Layout/Header";
 import styles from "../styles/styles";
-import Loader from "../components/Layout/Loader";
+import LoaderAnimate from "../components/Layout/LoaderAnimate";
 import ProfileSideBar from "../components/Profile/ProfileSidebar";
 import ProfileContent from "../components/Profile/ProfileContent";
 import { useSelector } from "react-redux";
@@ -13,7 +13,7 @@ const ProfilePage = () => {
   return (
     <div>
       {loading ? (
-        <Loader />
+        <LoaderAnimate />
       ) : (
         <>
           <Header />

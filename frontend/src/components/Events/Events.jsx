@@ -1,10 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import EventCard from "./EventCard";
-import { productData } from '../../static/data'; // adjust path if needed
+import { useSelector } from "react-redux";
 
 const Events = () => {
-  // Use static event data or fallback to a simple placeholder
-  const events = productData && productData.length > 0 ? productData : [];
+  const { allEvents = [] } = useSelector((state) => state.event);
 
   return (
     <div className="w-full my-12">
@@ -14,8 +13,8 @@ const Events = () => {
         </h1>
       </div>
       <div className="w-full grid">
-        {events.length > 0 ? (
-          events.map((event, idx) => (
+        {allEvents.length > 0 ? (
+          allEvents.map((event, idx) => (
             <div key={event._id || idx}>
               <EventCard data={event} />
             </div>

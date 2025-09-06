@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import { useSelector } from "react-redux";
 // import { useSearchParams } from "react-router-dom";
 import Header from "../components/Layout/Header";
-// import Loader from "../components/Layout/Loader";
+//  import LoaderAnimate from "../components/Layout/LoaderAnimate";
 import ProductCard from "../components/Route/ProductCard/ProductCard";
 import styles from "../styles/styles";
 import Footer from "../components/Layout/Footer";
@@ -25,7 +25,7 @@ const BestSellingPage = () => {
    <>
    {
     // isLoading ? (
-    //   <Loader />
+    //   <LoaderAnimate />
     // ) : (
       <div>
       <Header activeHeading={2} />

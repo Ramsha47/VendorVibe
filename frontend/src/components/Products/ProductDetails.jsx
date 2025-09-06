@@ -18,7 +18,6 @@ import styles from "../../styles/styles";
 import { toast } from "react-toastify";
 import Ratings from "./Ratings";
 // import axios from "axios";
-import { productData } from "../../static/data";
 
 const ProductDetails = ({ data }) => {
   // Robust fallback for images
@@ -41,13 +40,13 @@ const ProductDetails = ({ data }) => {
 //   const { wishlist } = useSelector((state) => state.wishlist);
 //   const { cart } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
-//   const { products } = useSelector((state) => state.products);
-  const products = productData;
+  const { products } = useSelector((state) => state.products);
   const [count, setCount] = useState(1);
   const [click, setClick] = useState(false);
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
 //   useEffect(() => {
 //     dispatch(getAllProductsShop(data && data?.shop._id));
 //     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
@@ -385,7 +384,7 @@ const ProductDetailsInfo = ({
               </h5>
               <h5 className="font-[600] pt-3">
                 Total Reviews:{" "}
-                <span className="font-[500]">{5}</span>
+                <span className="font-[500]">{products && products.length}</span>
               </h5>
               <Link to="/">
                 <div
