@@ -8,6 +8,7 @@ const {upload} = require("../multer");
 const jwt = require("jsonwebtoken");
 const sendMail = require("../utils/SendMail");
 const sendToken = require("../utils/jwtToken");
+const sendShopToken = require("../utils/shopToken");
 const ErrorHandler = require("../utils/ErrorHandler");
 const { isAuthenticatedUser ,isSeller} = require("../middleware/auth");
 
@@ -66,7 +67,7 @@ router.post("/create-shop", upload.single("file"), catchAsyncError(async (req, r
 // create activation token
 const createActivationToken = (seller) => {
     return jwt.sign(seller, process.env.ACTIVATION_SECRET, {
-      expiresIn: "5m",
+      expiresIn: "30m",
     });
   };
 
@@ -158,6 +159,43 @@ router.get(
       res.status(200).json({
         success: true,
         seller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// log out from shop
+router.get(
+  "/logout",
+  catchAsyncError(async (req, res, next) => {
+    try {
+      res.cookie("seller_token", null, {
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.status(201).json({
+        success: true,
+        message: "Log out successful!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// get shop info
+router.get(
+  "/get-shop-info/:id",
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const shop = await Shop.findById(req.params.id);
+      res.status(201).json({
+        success: true,
+        shop,
       });
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
