@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 
 const CreateProduct = () => {
   const { seller } = useSelector((state) => state.seller);
-  const { success, error } = useSelector((state) => state.products);
+  const { success, error } = useSelector((state) => state.product); 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -21,6 +21,10 @@ const CreateProduct = () => {
   const [discountPrice, setDiscountPrice] = useState();
   const [stock, setStock] = useState();
 
+  // Debug: Log seller and seller._id
+  console.log("Seller:", seller);
+  console.log("Seller._id:", seller?._id);
+
   useEffect(() => {
     if (error) {
       toast.error(error);
@@ -30,23 +34,11 @@ const CreateProduct = () => {
       navigate("/dashboard");
       window.location.reload();
     }
-  }, [dispatch, error, success]);
+  }, [error, success]); // Removed dispatch from dependencies as it's stable
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-
     setImages((prevImages) => [...prevImages, ...files]);
-
-    // files.forEach((file) => {
-    //   const reader = new FileReader();
-
-    //   reader.onload = () => {
-    //     if (reader.readyState === 2) {
-    //       setImages((old) => [...old, reader.result]);
-    //     }
-    //   };
-    //   reader.readAsDataURL(file);
-    // });
   };
 
   const handleSubmit = (e) => {
@@ -55,7 +47,7 @@ const CreateProduct = () => {
     const newForm = new FormData();
 
     images.forEach((image) => {
-      newForm.set("images", image);
+      newForm.append("images", image); // Use append instead of set to handle multiple images
     });
     newForm.append("name", name);
     newForm.append("description", description);
@@ -64,26 +56,33 @@ const CreateProduct = () => {
     newForm.append("originalPrice", originalPrice);
     newForm.append("discountPrice", discountPrice);
     newForm.append("stock", stock);
-    newForm.append("shopId", seller._id);
-    dispatch(
-      createProduct({
-        name,
-        description,
-        category,
-        tags,
-        originalPrice,
-        discountPrice,
-        stock,
-        shopId: seller._id,
-        images,
-      })
-    );
+    newForm.append("shopId", seller?._id || ""); // Use optional chaining to avoid errors
+
+    // Debug: Log FormData contents
+    for (let [key, value] of newForm.entries()) {
+      console.log(`FormData ${key}:`, value);
+    }
+
+    // Debug: Log the plain object sent to createProduct
+    const productData = {
+      name,
+      description,
+      category,
+      tags,
+      originalPrice,
+      discountPrice,
+      stock,
+      shopId: seller?._id || "",
+      images,
+    };
+    console.log("Product Data:", productData);
+
+    dispatch(createProduct(productData)); // Use productData or newForm based on backend expectation
   };
 
   return (
-    <div className="w-[90%] 800px:w-[50%] bg-white  shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
+    <div className="w-[90%] 800px:w-[50%] bg-white shadow h-[80vh] rounded-[4px] p-3 overflow-y-scroll">
       <h5 className="text-[30px] font-Poppins text-center">Create Product</h5>
-      {/* create product form */}
       <form onSubmit={handleSubmit}>
         <br />
         <div>

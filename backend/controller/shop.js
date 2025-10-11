@@ -10,6 +10,7 @@ const sendMail = require("../utils/SendMail");
 const sendToken = require("../utils/jwtToken");
 const sendShopToken = require("../utils/shopToken");
 const ErrorHandler = require("../utils/ErrorHandler");
+
 const { isAuthenticatedUser ,isSeller} = require("../middleware/auth");
 
 router.post("/create-shop", upload.single("file"), catchAsyncError(async (req, res, next) => { 
@@ -202,5 +203,73 @@ router.get(
     }
   })
 );
+
+// update shop profile picture
+router.put(
+  "/update-shop-avatar",
+  isSeller,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      let existsSeller = await Shop.findById(req.seller._id);
+
+        const imageId = existsSeller.avatar.public_id;
+
+        await cloudinary.v2.uploader.destroy(imageId);
+
+        const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+          folder: "avatars",
+          width: 150,
+        });
+
+        existsSeller.avatar = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+
+  
+      await existsSeller.save();
+
+      res.status(200).json({
+        success: true,
+        seller:existsSeller,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// update seller info
+router.put(
+  "/update-seller-info",
+  isSeller,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const { name, description, address, phoneNumber, zipCode } = req.body;
+
+      const shop = await Shop.findOne(req.seller._id);
+
+      if (!shop) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      shop.name = name;
+      shop.description = description;
+      shop.address = address;
+      shop.phoneNumber = phoneNumber;
+      shop.zipCode = zipCode;
+
+      await shop.save();
+
+      res.status(201).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
 
 module.exports = router;

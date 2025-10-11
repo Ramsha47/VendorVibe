@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux'
 
 const ProductPage = () => {
     const [searchParams] = useSearchParams();
-    const {allProducts} = useSelector((state) => state.products);
+    const {allProducts=[]} = useSelector((state) => state.products || {});
     const categories = searchParams.get('category');
     const [data , setData] = useState([]);
 
