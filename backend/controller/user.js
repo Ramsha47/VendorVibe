@@ -165,4 +165,156 @@ router.get("/logout",isAuthenticatedUser, catchAsyncError(async (req, res, next)
   }
 }));
 
+// update user info
+router.put("/update-user-info", isAuthenticatedUser, catchAsyncError(async (req, res, next) => {
+  try {
+    const { name, email, password, phoneNumber } = req.body;
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return next(new ErrorHandler("User doesn't exists", 400));
+    }
+
+    const  isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return next(new ErrorHandler("Please provide the correct information", 400));
+    }
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    user.phoneNumber = phoneNumber;
+    await user.save();
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+}));
+
+// update user avatar
+router.put("/update-user-avatar", isAuthenticatedUser ,upload.single("image"), catchAsyncError(async (req, res, next) => {
+  try {
+    const existUser = await User.findById(req.user.id);
+    const existUserAvatar = `uploads/${existUser.avatar}`;
+   
+    fs.unlinkSync(existUserAvatar, (err) => {
+      if (err) {
+        console.log(err);
+        return next(new ErrorHandler("error deleting file", 500));
+      }
+    });
+    const fileUrl = path.join(req.file.filename);
+    const user = await User.findByIdAndUpdate(req.user.id, { avatar: fileUrl });
+    res.status(200).json({
+      success: true,
+      user,
+    });
+    
+  } catch (error) {
+    return next(new ErrorHandler(error.message, 500));
+  }
+}));
+
+// update user addresses
+router.put(
+  "/update-user-addresses",
+  isAuthenticatedUser,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+
+      const sameTypeAddress = user.addresses.find(
+        (address) => address.addressType === req.body.addressType
+      );
+      if (sameTypeAddress) {
+        return next(
+          new ErrorHandler(`${req.body.addressType} address already exists`)
+        );
+      }
+
+      const existsAddress = user.addresses.find(
+        (address) => address._id === req.body._id
+      );
+
+      if (existsAddress) {
+        Object.assign(existsAddress, req.body);
+      } else {
+        // add the new address to the array
+        user.addresses.push(req.body);
+      }
+
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// delete user address
+router.delete(
+  "/delete-user-address/:id",
+  isAuthenticatedUser,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const userId = req.user._id;
+      const addressId = req.params.id;
+
+      await User.updateOne(
+        {
+          _id: userId,
+        },
+        { $pull: { addresses: { _id: addressId } } }
+      );
+
+      const user = await User.findById(userId);
+
+      res.status(200).json({ success: true, user });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+// update user password
+router.put(
+  "/update-user-password",
+  isAuthenticatedUser,
+  catchAsyncError(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id).select("+password");
+
+      const isPasswordMatched = await user.comparePassword(
+        req.body.oldPassword
+      );
+
+      if (!isPasswordMatched) {
+        return next(new ErrorHandler("Old password is incorrect!", 400));
+      }
+
+      if (req.body.newPassword !== req.body.confirmPassword) {
+        return next(
+          new ErrorHandler("Password doesn't matched with each other!", 400)
+        );
+      }
+      user.password = req.body.newPassword;
+
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        message: "Password updated successfully!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
+
+
 module.exports = router;

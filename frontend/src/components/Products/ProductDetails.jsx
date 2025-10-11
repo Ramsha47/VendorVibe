@@ -7,38 +7,21 @@ import {
 } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-// import { getAllProductsShop } from "../../redux/actions/product";
+import { getAllProductsShop } from "../../redux/actions/product";
 import { server } from "../../server";
 import styles from "../../styles/styles";
-// import {
-//   addToWishlist,
-//   removeFromWishlist,
-// } from "../../redux/actions/wishlist";
-// import { addTocart } from "../../redux/actions/cart";
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from "../../redux/actions/wishlist";
+import { addTocart } from "../../redux/actions/cart";
 import { toast } from "react-toastify";
 import Ratings from "./Ratings";
-// import axios from "axios";
+import axios from "axios";
 
 const ProductDetails = ({ data }) => {
-  // Robust fallback for images
-  const safeImages = Array.isArray(data?.images) && data.images.length > 0
-    ? data.images
-    : [{ url: "https://via.placeholder.com/400x400?text=No+Image" }];
-  // Robust fallback for shop
-  const safeShop = {
-    _id: data?.shop?._id || "demo-shop-id",
-    name: data?.shop?.name || "Demo Shop",
-    avatar: { url: data?.shop?.avatar?.url || "https://via.placeholder.com/80?text=Shop" },
-    description: data?.shop?.description || "This is a demo shop description.",
-    createdAt: data?.shop?.createdAt || "2024-01-01T00:00:00.000Z"
-  };
-  // Robust fallback for reviews
-  const safeReviews = Array.isArray(data?.reviews) ? data.reviews : [];
-  // Robust fallback for ratings
-  const safeRatings = data?.ratings || 5;
-
-//   const { wishlist } = useSelector((state) => state.wishlist);
-//   const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { cart } = useSelector((state) => state.cart);
   const { user, isAuthenticated } = useSelector((state) => state.user);
   const { products } = useSelector((state) => state.products);
   const [count, setCount] = useState(1);
@@ -46,15 +29,14 @@ const ProductDetails = ({ data }) => {
   const [select, setSelect] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-//   useEffect(() => {
-//     dispatch(getAllProductsShop(data && data?.shop._id));
-//     if (wishlist && wishlist.find((i) => i._id === data?._id)) {
-//       setClick(true);
-//     } else {
-//       setClick(false);
-//     }
-//   }, [data, wishlist]);
+  useEffect(() => {
+    dispatch(getAllProductsShop(data && data?.shop._id));
+    if (wishlist && wishlist.find((i) => i._id === data?._id)) {
+      setClick(true);
+    } else {
+      setClick(false);
+    }
+  }, [data, wishlist]);
 
   const incrementCount = () => {
     setCount(count + 1);
@@ -66,69 +48,69 @@ const ProductDetails = ({ data }) => {
     }
   };
 
-//   const removeFromWishlistHandler = (data) => {
-//     setClick(!click);
-//     dispatch(removeFromWishlist(data));
-//   };
+  const removeFromWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(removeFromWishlist(data));
+  };
 
-//   const addToWishlistHandler = (data) => {
-//     setClick(!click);
-//     dispatch(addToWishlist(data));
-//   };
+  const addToWishlistHandler = (data) => {
+    setClick(!click);
+    dispatch(addToWishlist(data));
+  };
 
-//   const addToCartHandler = (id) => {
-//     const isItemExists = cart && cart.find((i) => i._id === id);
-//     if (isItemExists) {
-//       toast.error("Item already in cart!");
-//     } else {
-//       if (data.stock < 1) {
-//         toast.error("Product stock limited!");
-//       } else {
-//         const cartData = { ...data, qty: count };
-//         dispatch(addTocart(cartData));
-//         toast.success("Item added to cart successfully!");
-//       }
-//     }
-//   };
+  const addToCartHandler = (id) => {
+    const isItemExists = cart && cart.find((i) => i._id === id);
+    if (isItemExists) {
+      toast.error("Item already in cart!");
+    } else {
+      if (data.stock < 1) {
+        toast.error("Product stock limited!");
+      } else {
+        const cartData = { ...data, qty: count };
+        dispatch(addTocart(cartData));
+        toast.success("Item added to cart successfully!");
+      }
+    }
+  };
 
-//   const totalReviewsLength =
-//     products &&
-//     products.reduce((acc, product) => acc + product.reviews.length, 0);
+  const totalReviewsLength =
+    products &&
+    products.reduce((acc, product) => acc + product.reviews.length, 0);
 
-//   const totalRatings =
-//     products &&
-//     products.reduce(
-//       (acc, product) =>
-//         acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
-//       0
-//     );
+  const totalRatings =
+    products &&
+    products.reduce(
+      (acc, product) =>
+        acc + product.reviews.reduce((sum, review) => sum + review.rating, 0),
+      0
+    );
 
-//   const avg =  totalRatings / totalReviewsLength || 0;
+  const avg =  totalRatings / totalReviewsLength || 0;
 
-//   const averageRating = avg.toFixed(2);
+  const averageRating = avg.toFixed(2);
 
 
-//   const handleMessageSubmit = async () => {
-//     if (isAuthenticated) {
-//       const groupTitle = data._id + user._id;
-//       const userId = user._id;
-//       const sellerId = data.shop._id;
-//       await axios
-//         .post(`${server}/conversation/create-new-conversation`, {
-//           groupTitle,
-//           userId,
-//           sellerId,
-//         })
-//         .then((res) => {
-//           navigate(`/inbox?${res.data.conversation._id}`);
-//         })
-//         .catch((error) => {
-//           toast.error(error.response.data.message);
-//         });
-//     } else {
-//       toast.error("Please login to create a conversation");
-//     }
-//   };
+  const handleMessageSubmit = async () => {
+    if (isAuthenticated) {
+      const groupTitle = data._id + user._id;
+      const userId = user._id;
+      const sellerId = data.shop._id;
+      await axios
+        .post(`${server}/conversation/create-new-conversation`, {
+          groupTitle,
+          userId,
+          sellerId,
+        })
+        .then((res) => {
+          navigate(`/inbox?${res.data.conversation._id}`);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+        });
+    } else {
+      toast.error("Please login to create a conversation");
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -138,25 +120,31 @@ const ProductDetails = ({ data }) => {
             <div className="block w-full 800px:flex">
               <div className="w-full 800px:w-[50%]">
                 <img
-                  src={safeImages[select]?.url || safeImages[0]?.url}
+                  src={`${data && data.images[select]?.url}`}
                   alt=""
                   className="w-[80%]"
                 />
                 <div className="w-full flex">
-                  {safeImages.map((i, index) => (
-                    <div
-                      className={`${
-                        select === index ? "border" : "null"
-                      } cursor-pointer`}
-                    >
-                      <img
-                        src={`${i?.url}`}
-                        alt=""
-                        className="h-[200px] overflow-hidden mr-3 mt-3"
-                        onClick={() => setSelect(index)}
-                      />
-                    </div>
-                  ))}
+                  {data &&
+                    data.images.map((i, index) => (
+                      <div
+                        className={`${
+                          select === 0 ? "border" : "null"
+                        } cursor-pointer`}
+                      >
+                        <img
+                          src={`${i?.url}`}
+                          alt=""
+                          className="h-[200px] overflow-hidden mr-3 mt-3"
+                          onClick={() => setSelect(index)}
+                        />
+                      </div>
+                    ))}
+                  <div
+                    className={`${
+                      select === 1 ? "border" : "null"
+                    } cursor-pointer`}
+                  ></div>
                 </div>
               </div>
               <div className="w-full 800px:w-[50%] pt-5">
@@ -194,7 +182,7 @@ const ProductDetails = ({ data }) => {
                       <AiFillHeart
                         size={30}
                         className="cursor-pointer"
-                        // onClick={() => removeFromWishlistHandler(data)}
+                        onClick={() => removeFromWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Remove from wishlist"
                       />
@@ -202,7 +190,7 @@ const ProductDetails = ({ data }) => {
                       <AiOutlineHeart
                         size={30}
                         className="cursor-pointer"
-                        // onClick={() => addToWishlistHandler(data)}
+                        onClick={() => addToWishlistHandler(data)}
                         color={click ? "red" : "#333"}
                         title="Add to wishlist"
                       />
@@ -211,33 +199,33 @@ const ProductDetails = ({ data }) => {
                 </div>
                 <div
                   className={`${styles.button} !mt-6 !rounded !h-11 flex items-center`}
-                //   onClick={() => addToCartHandler(data._id)}
+                  onClick={() => addToCartHandler(data._id)}
                 >
                   <span className="text-white flex items-center">
                     Add to cart <AiOutlineShoppingCart className="ml-1" />
                   </span>
                 </div>
                 <div className="flex items-center pt-8">
-                  <Link to={`/shop/preview/${data._id}`}>
+                  <Link to={`/shop/preview/${data?.shop._id}`}>
                     <img
-                      src={safeShop.avatar.url}
+                      src={`${data?.shop?.avatar?.url}`}
                       alt=""
                       className="w-[50px] h-[50px] rounded-full mr-2"
                     />
                   </Link>
                   <div className="pr-8">
-                    <Link to={`/shop/preview/${safeShop._id}`}>
+                    <Link to={`/shop/preview/${data?.shop._id}`}>
                       <h3 className={`${styles.shop_name} pb-1 pt-1`}>
-                        {safeShop.name}
+                        {data.shop.name}
                       </h3>
                     </Link>
                     <h5 className="pb-3 text-[15px]">
-                      ({2}/5) Ratings
+                      ({averageRating}/5) Ratings
                     </h5>
                   </div>
                   <div
                     className={`${styles.button} bg-[#6443d1] mt-4 !rounded !h-11`}
-                    // onClick={handleMessageSubmit}
+                    onClick={handleMessageSubmit}
                   >
                     <span className="text-white flex items-center">
                       Send Message <AiOutlineMessage className="ml-1" />
@@ -250,7 +238,8 @@ const ProductDetails = ({ data }) => {
           <ProductDetailsInfo
             data={data}
             products={products}
-            safeShop={safeShop}
+            totalReviewsLength={totalReviewsLength}
+            averageRating={averageRating}
           />
           <br />
           <br />
@@ -263,9 +252,8 @@ const ProductDetails = ({ data }) => {
 const ProductDetailsInfo = ({
   data,
   products,
-  safeShop,
-//   totalReviewsLength,
-//   averageRating,
+  totalReviewsLength,
+  averageRating,
 }) => {
   const [active, setActive] = useState(1);
 
@@ -354,19 +342,19 @@ const ProductDetailsInfo = ({
             <Link to={`/shop/preview/${data.shop._id}`}>
               <div className="flex items-center">
                 <img
-                  src={safeShop.avatar.url}
+                  src={`${data?.shop?.avatar?.url}`}
                   className="w-[50px] h-[50px] rounded-full"
                   alt=""
                 />
                 <div className="pl-3">
-                  <h3 className={`${styles.shop_name}`}>{safeShop.name}</h3>
+                  <h3 className={`${styles.shop_name}`}>{data.shop.name}</h3>
                   <h5 className="pb-2 text-[15px]">
-                    ({2}/5) Ratings
+                    ({averageRating}/5) Ratings
                   </h5>
                 </div>
               </div>
             </Link>
-            <p className="pt-2">{safeShop.description}</p>
+            <p className="pt-2">{data.shop.description}</p>
           </div>
           <div className="w-full 800px:w-[50%] mt-5 800px:mt-0 800px:flex flex-col items-end">
             <div className="text-left">
@@ -384,7 +372,7 @@ const ProductDetailsInfo = ({
               </h5>
               <h5 className="font-[600] pt-3">
                 Total Reviews:{" "}
-                <span className="font-[500]">{products && products.length}</span>
+                <span className="font-[500]">{totalReviewsLength}</span>
               </h5>
               <Link to="/">
                 <div

@@ -7,22 +7,22 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { server } from "../../server";
 import styles from "../../styles/styles";
-import { DataGrid } from "@mui/x-data-grid";
-import Button from "@mui/material/Button";
+import { DataGrid } from "@material-ui/data-grid";
+import { Button } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { MdTrackChanges } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
-// import {
-//   deleteUserAddress,
-//   loadUser,
-//   updatUserAddress,
-//   updateUserInformation,
-// } from "../../redux/actions/user";
+import {
+  deleteUserAddress,
+  loadUser,
+  updatUserAddress,
+  updateUserInformation,
+} from "../../redux/actions/user";
 import { Country, State } from "country-state-city";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-// import { getAllOrdersOfUser } from "../../redux/actions/order";
+import { getAllOrdersOfUser } from "../../redux/actions/order";
 
 const ProfileContent = ({ active }) => {
   const { user, error, successMessage } = useSelector((state) => state.user);
@@ -46,35 +46,35 @@ const ProfileContent = ({ active }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // dispatch(updateUserInformation(name, email, phoneNumber, password));
+    dispatch(updateUserInformation(name, email, phoneNumber, password));
   };
 
-  // const handleImage = async (e) => {
-  //   const reader = new FileReader();
+  const handleImage = async (e) => {
+    const reader = new FileReader();
 
-  //   reader.onload = () => {
-  //     if (reader.readyState === 2) {
-  //       setAvatar(reader.result);
-  //       axios
-  //         .put(
-  //           `${server}/user/update-avatar`,
-  //           { avatar: reader.result },
-  //           {
-  //             withCredentials: true,
-  //           }
-  //         )
-  //         .then((response) => {
-  //           dispatch(loadUser());
-  //           toast.success("avatar updated successfully!");
-  //         })
-  //         .catch((error) => {
-  //           toast.error(error);
-  //         });
-  //     }
-  //   };
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setAvatar(reader.result);
+        axios
+          .put(
+            `${server}/user/update-avatar`,
+            { avatar: reader.result },
+            {
+              withCredentials: true,
+            }
+          )
+          .then((response) => {
+            dispatch(loadUser());
+            toast.success("avatar updated successfully!");
+          })
+          .catch((error) => {
+            toast.error(error);
+          });
+      }
+    };
 
-  //   reader.readAsDataURL(e.target.files[0]);
-  // };
+    reader.readAsDataURL(e.target.files[0]);
+  };
 
   return (
     <div className="w-full">
@@ -93,7 +93,7 @@ const ProfileContent = ({ active }) => {
                   type="file"
                   id="image"
                   className="hidden"
-                  // onChange={handleImage}
+                  onChange={handleImage}
                 />
                 <label htmlFor="image">
                   <AiOutlineCamera />
@@ -178,7 +178,7 @@ const ProfileContent = ({ active }) => {
 
       {/* Track order */}
       {active === 5 && (
-        <div> 
+        <div>
           <TrackOrder />
         </div>
       )}
@@ -201,35 +201,13 @@ const ProfileContent = ({ active }) => {
 };
 
 const AllOrders = () => {
-  // const { user } = useSelector((state) => state.user);
-  // const { orders } = useSelector((state) => state.order);
-  // const dispatch = useDispatch();
-  const orders = [
-    {
-     _id: "1rhfhejtotk",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    },
-    {
-     _id: "2",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    }
-  ];
+  const { user } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(getAllOrdersOfUser(user._id));
-  // }, []);
+  useEffect(() => {
+    dispatch(getAllOrdersOfUser(user._id));
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -240,7 +218,7 @@ const AllOrders = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.value === "Delivered"
+        return params.getValue(params.id, "status") === "Delivered"
           ? "greenColor"
           : "redColor";
       },
@@ -288,9 +266,9 @@ const AllOrders = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
-        status: item.orderStatus,
+        status: item.status,
       });
     });
 
@@ -308,38 +286,16 @@ const AllOrders = () => {
 };
 
 const AllRefundOrders = () => {
-  // const { user } = useSelector((state) => state.user);
-  // const { orders } = useSelector((state) => state.order);
-  // const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(getAllOrdersOfUser(user._id));
-  // }, []);
-  const orders = [
-    {
-     _id: "1rhfhejtotk",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    },
-    {
-     _id: "2",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    }
-  ];
+  useEffect(() => {
+    dispatch(getAllOrdersOfUser(user._id));
+  }, []);
 
-  // const eligibleOrders =
-  //   orders && orders.filter((item) => item.status === "Processing refund");
+  const eligibleOrders =
+    orders && orders.filter((item) => item.status === "Processing refund");
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -350,7 +306,7 @@ const AllRefundOrders = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.value === "Delivered"
+        return params.getValue(params.id, "status") === "Delivered"
           ? "greenColor"
           : "redColor";
       },
@@ -394,11 +350,11 @@ const AllRefundOrders = () => {
 
   const row = [];
 
-  orders &&
-    orders.forEach((item) => {
+  eligibleOrders &&
+    eligibleOrders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
         status: item.status,
       });
@@ -418,35 +374,13 @@ const AllRefundOrders = () => {
 };
 
 const TrackOrder = () => {
-  // const { user } = useSelector((state) => state.user);
-  // const { orders } = useSelector((state) => state.order);
-  // const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   dispatch(getAllOrdersOfUser(user._id));
-  // }, []);
-  const orders = [
-    {
-      _id: "1rhfhejtotk",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    },
-    {
-      _id: "2",
-      orderItems: [
-        {
-          name: "Product iphone 14",
-        },
-      ],
-      totalPrice: 100,
-      orderStatus: "Delivered",
-    },
-  ];
+  useEffect(() => {
+    dispatch(getAllOrdersOfUser(user._id));
+  }, []);
 
   const columns = [
     { field: "id", headerName: "Order ID", minWidth: 150, flex: 0.7 },
@@ -457,7 +391,7 @@ const TrackOrder = () => {
       minWidth: 130,
       flex: 0.7,
       cellClassName: (params) => {
-        return params.value === "Delivered"
+        return params.getValue(params.id, "status") === "Delivered"
           ? "greenColor"
           : "redColor";
       },
@@ -505,7 +439,7 @@ const TrackOrder = () => {
     orders.forEach((item) => {
       row.push({
         id: item._id,
-        itemsQty: item.orderItems.length,
+        itemsQty: item.cart.length,
         total: "US$ " + item.totalPrice,
         status: item.status,
       });
@@ -529,25 +463,25 @@ const ChangePassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  // const passwordChangeHandler = async (e) => {
-  //   e.preventDefault();
+  const passwordChangeHandler = async (e) => {
+    e.preventDefault();
 
-  //   await axios
-  //     .put(
-  //       `${server}/user/update-user-password`,
-  //       { oldPassword, newPassword, confirmPassword },
-  //       { withCredentials: true }
-  //     )
-  //     .then((res) => {
-  //       toast.success(res.data.success);
-  //       setOldPassword("");
-  //       setNewPassword("");
-  //       setConfirmPassword("");
-  //     })
-  //     .catch((error) => {
-  //       toast.error(error.response.data.message);
-  //     });
-  // };
+    await axios
+      .put(
+        `${server}/user/update-user-password`,
+        { oldPassword, newPassword, confirmPassword },
+        { withCredentials: true }
+      )
+      .then((res) => {
+        toast.success(res.data.success);
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
   return (
     <div className="w-full px-5">
       <h1 className="block text-[25px] text-center font-[600] text-[#000000ba] pb-2">
@@ -556,7 +490,7 @@ const ChangePassword = () => {
       <div className="w-full">
         <form
           aria-required
-          // onSubmit={passwordChangeHandler}
+          onSubmit={passwordChangeHandler}
           className="flex flex-col items-center"
         >
           <div className=" w-[100%] 800px:w-[50%] mt-5">
@@ -627,33 +561,33 @@ const Address = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (addressType === "" || country === "" || city === "") {
-    //   toast.error("Please fill all the fields!");
-    // } else {
-    //   dispatch(
-    //     updatUserAddress(
-    //       country,
-    //       city,
-    //       address1,
-    //       address2,
-    //       zipCode,
-    //       addressType
-    //     )
-    //   );
-    //   setOpen(false);
-    //   setCountry("");
-    //   setCity("");
-    //   setAddress1("");
-    //   setAddress2("");
-    //   setZipCode(null);
-    //   setAddressType("");
-    // }
+    if (addressType === "" || country === "" || city === "") {
+      toast.error("Please fill all the fields!");
+    } else {
+      dispatch(
+        updatUserAddress(
+          country,
+          city,
+          address1,
+          address2,
+          zipCode,
+          addressType
+        )
+      );
+      setOpen(false);
+      setCountry("");
+      setCity("");
+      setAddress1("");
+      setAddress2("");
+      setZipCode(null);
+      setAddressType("");
+    }
   };
 
-  // const handleDelete = (item) => {
-  //   const id = item._id;
-  //   dispatch(deleteUserAddress(id));
-  // };
+  const handleDelete = (item) => {
+    const id = item._id;
+    dispatch(deleteUserAddress(id));
+  };
 
   return (
     <div className="w-full px-5">
@@ -829,7 +763,7 @@ const Address = () => {
               <AiOutlineDelete
                 size={25}
                 className="cursor-pointer"
-                // onClick={() => handleDelete(item)}
+                onClick={() => handleDelete(item)}
               />
             </div>
           </div>

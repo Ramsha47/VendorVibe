@@ -13,15 +13,15 @@ import { CgProfile } from "react-icons/cg";
 import DropDown from "./DropDown";
 import Navbar from "./Navbar";
 import { useSelector } from "react-redux";
-// import Cart from "../cart/Cart";
-// import Wishlist from "../Wishlist/Wishlist";
+import Cart from "../cart/Cart";
+import Wishlist from "../Wishlist/Wishlist";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ activeHeading }) => {
   const { isAuthenticated, user } = useSelector((state) => state.user);
   const { isSeller } = useSelector((state) => state.seller);
-  // const { wishlist } = useSelector((state) => state.wishlist);
-  // const { cart } = useSelector((state) => state.cart);
+  const { wishlist } = useSelector((state) => state.wishlist);
+  const { cart } = useSelector((state) => state.cart);
   const { allProducts = [] } = useSelector((state) => state.product);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchData, setSearchData] = useState(null);
@@ -150,7 +150,7 @@ const Header = ({ activeHeading }) => {
               >
                 <AiOutlineHeart size={30} color="rgb(255 255 255 / 83%)" />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  {1}
+                  {wishlist && wishlist.length}
                 </span>
               </div>
             </div>
@@ -165,7 +165,7 @@ const Header = ({ activeHeading }) => {
                   color="rgb(255 255 255 / 83%)"
                 />
                 <span className="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px] leading-tight text-center">
-                  {1}
+                  {cart && cart.length}
                 </span>
               </div>
             </div>
@@ -189,12 +189,12 @@ const Header = ({ activeHeading }) => {
             </div>
 
             {/* cart popup */}
-            {/* {openCart ? <Cart setOpenCart={setOpenCart} /> : null} */}
+            {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
 
             {/* wishlist popup */}
-            {/* {openWishlist ? (
+            {openWishlist ? (
               <Wishlist setOpenWishlist={setOpenWishlist} />
-            ) : null} */}
+            ) : null}
           </div>
         </div>
       </div>
@@ -230,15 +230,15 @@ const Header = ({ activeHeading }) => {
             >
               <AiOutlineShoppingCart size={30} />
               <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
-                {1}
+                {cart &&cart.length}
               </span>
             </div>
           </div>
           {/* cart popup */}
-          {/* {openCart ? <Cart setOpenCart={setOpenCart} /> : null} */}
+          {openCart ? <Cart setOpenCart={setOpenCart} /> : null}
 
           {/* wishlist popup */}
-          {/* {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null} */}
+          {openWishlist ? <Wishlist setOpenWishlist={setOpenWishlist} /> : null}
         </div>
 
         {/* header sidebar */}
@@ -255,7 +255,7 @@ const Header = ({ activeHeading }) => {
                   >
                     <AiOutlineHeart size={30} className="mt-5 ml-3" />
                     <span class="absolute right-0 top-0 rounded-full bg-[#3bc177] w-4 h-4 top right p-0 m-0 text-white font-mono text-[12px]  leading-tight text-center">
-                      {1}
+                      {wishlist && wishlist.length}
                     </span>
                   </div>
                 </div>
