@@ -34,6 +34,7 @@ const couponCode = require("./controller/couponCode");
 const order = require("./controller/order");
 const conversation = require("./controller/conversation");
 const message = require("./controller/message");
+const withdraw = require("./controller/withdraw");
 
 app.get("/test", (req, res) => {
   console.log("Test route hit");
@@ -48,6 +49,7 @@ app.use("/api/v2/couponCode", couponCode);
 app.use("/api/v2/order", order);
 app.use("/api/v2/conversation", conversation);
 app.use("/api/v2/message", message);
+app.use("/api/v2/withdraw", withdraw);
 
 // Error Handling
 app.use(ErrorHandler);

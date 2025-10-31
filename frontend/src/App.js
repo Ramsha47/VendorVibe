@@ -3,10 +3,10 @@ import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   LoginPage,
-  SignupPage,
+  SignUpPage,
   ActivationPage,
   HomePage,
-  ProductsPage,
+  ProductPage,
   BestSellingPage,
   EventsPage,
   FAQPage,
@@ -28,7 +28,7 @@ import {
   ShopAllProducts,
   ShopCreateEvents,
   ShopAllEvents,
-  ShopAllCoupouns,
+  ShopAllCoupon,
   ShopPreviewPage,
   ShopAllOrders,
   ShopOrderDetails,
@@ -36,25 +36,26 @@ import {
   ShopSettingsPage,
   ShopWithDrawMoneyPage,
   ShopInboxPage,
+  ShopHomePage,
 } from "./routes/ShopRoutes";
-// import {
-//   AdminDashboardPage,
-//   AdminDashboardUsers,
-//   AdminDashboardSellers,
-//   AdminDashboardOrders,
-//   AdminDashboardProducts,
-//   AdminDashboardEvents,
-//   AdminDashboardWithdraw
-// } from "./routes/AdminRoutes";
+import {
+  AdminDashboardPage,
+  AdminDashboardUsers,
+  AdminDashboardSellers,
+  AdminDashboardOrders,
+  AdminDashboardProducts,
+  AdminDashboardEvents,
+  AdminDashboardWithdraw
+} from "./routes/AdminRoutes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Store from "./redux/store";
 import { loadSeller, loadUser } from "./redux/actions/user";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import ProtectedAdminRoute from "./routes/ProtectedAdminRoute";
-import { ShopHomePage } from "./ShopRoutes.js";
+
 import SellerProtectedRoute from "./routes/SellerProtectedRoute";
-import { getAllProducts } from "./redux/actions/product";
+import { getAllProductsShop } from "./redux/actions/product";
 import { getAllEvents } from "./redux/actions/event";
 import axios from "axios";
 import { server } from "./server";
@@ -71,7 +72,7 @@ const App = () => {
   useEffect(() => {
     Store.dispatch(loadUser());
     Store.dispatch(loadSeller());
-    Store.dispatch(getAllProducts());
+    Store.dispatch(getAllProductsShop());
     Store.dispatch(getAllEvents());
     getStripeApikey();
   }, []);
@@ -95,7 +96,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/sign-up" element={<SignupPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
         <Route
           path="/activation/:activation_token"
           element={<ActivationPage />}
@@ -104,7 +105,7 @@ const App = () => {
           path="/seller/activation/:activation_token"
           element={<SellerActivationPage />}
         />
-        <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products" element={<ProductPage />} />
         <Route path="/product/:id" element={<ProductDetailsPage />} />
         <Route path="/best-selling" element={<BestSellingPage />} />
         <Route path="/events" element={<EventsPage />} />
@@ -239,7 +240,7 @@ const App = () => {
           path="/dashboard-coupouns"
           element={
             <SellerProtectedRoute>
-              <ShopAllCoupouns />
+              <ShopAllCoupon />
             </SellerProtectedRoute>
           }
         />
@@ -260,7 +261,7 @@ const App = () => {
           }
         />
         {/* Admin Routes */}
-        {/* <Route
+        <Route
           path="/admin/dashboard"
           element={
             <ProtectedAdminRoute>
@@ -315,7 +316,7 @@ const App = () => {
               <AdminDashboardWithdraw />
             </ProtectedAdminRoute>
           }
-        /> */}
+        />
       </Routes>
       <ToastContainer
         position="bottom-center"
